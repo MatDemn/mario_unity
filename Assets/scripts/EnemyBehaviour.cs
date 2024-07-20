@@ -4,13 +4,16 @@ using UnityEngine;
 
 public class EnemyBehaviour : MonoBehaviour
 {
-    [SerializeField]
     Vector3 _patrolStart;
 
     [SerializeField]
     Transform _patrolEnd;
 
+    [SerializeField]
     Transform _modelTransform;
+
+    [SerializeField]
+    Transform _diePivot;
 
     int _direction = 1;
 
@@ -22,7 +25,6 @@ public class EnemyBehaviour : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _modelTransform = transform.GetChild(0);
         _patrolStart = _modelTransform.position;
         _animator = GetComponentInChildren<Animator>();
         StartCoroutine(Patrol());
@@ -58,11 +60,11 @@ public class EnemyBehaviour : MonoBehaviour
 
     IEnumerator ScaleDown()
     {
-        float progress = _modelTransform.localScale.y;
+        float progress = _diePivot.localScale.y;
         while(true)
         {
             float delta = -Time.deltaTime;
-            _modelTransform.localScale += Vector3.up * delta;
+            _diePivot.localScale += Vector3.up * delta;
             progress += delta;
             if (progress <= 0)
             {
