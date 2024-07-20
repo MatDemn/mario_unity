@@ -11,6 +11,10 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField]
     Transform _playerModel;
+
+    [SerializeField]
+    bool _isGrounded = true;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -55,22 +59,24 @@ public class PlayerController : MonoBehaviour
 
         _playerAnim.SetWalking(walking);
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (_isGrounded && Input.GetKeyDown(KeyCode.Space))
         {
             rb.AddForce(Vector3.up * 6f, ForceMode.Impulse);
+            _isGrounded = false;
             _playerAnim.SetJump(true);
-            StartCoroutine(CheckForGround());
+            StartCoroutine(DisableAnimIfGrounded());
         }
 
-        
+        _isGrounded = Physics.Raycast(transform.position, -transform.up, 0.6f);
+
     }
 
-    IEnumerator CheckForGround()
+    IEnumerator DisableAnimIfGrounded()
     {
-        while(true)
+        while (true)
         {
             yield return new WaitForSeconds(.1f);
-            if (Physics.Raycast(transform.position, -transform.up, 1f))
+            if (_isGrounded)
             {
                 _playerAnim.SetJump(false);
                 yield break;
