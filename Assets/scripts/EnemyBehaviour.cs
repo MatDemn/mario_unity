@@ -87,4 +87,13 @@ public class EnemyBehaviour : MonoBehaviour
         _animator.SetBool("Walking", false);
         StartCoroutine(ScaleDown());
     }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        Debug.LogError($"{collision.gameObject.tag}, {collision.gameObject.name}");
+        if (collision.gameObject.CompareTag("Fireball"))
+        {
+            Die();
+        }
+    }
 }

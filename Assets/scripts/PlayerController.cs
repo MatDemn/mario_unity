@@ -15,6 +15,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     bool _isGrounded = true;
 
+    float _throwCooldown = 0f;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -69,6 +71,13 @@ public class PlayerController : MonoBehaviour
 
         _isGrounded = Physics.Raycast(transform.position, -transform.up, 0.6f);
 
+        _throwCooldown -= _throwCooldown < 0 ? 0 : Time.deltaTime; 
+
+        if(_throwCooldown <= 0 && Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            _throwCooldown = 3f;
+            _playerAnim.TriggerThrow();
+        }
     }
 
     IEnumerator DisableAnimIfGrounded()
@@ -80,7 +89,7 @@ public class PlayerController : MonoBehaviour
             {
                 _playerAnim.SetJump(false);
                 yield break;
-            }
+            }      
         }
     }
 }

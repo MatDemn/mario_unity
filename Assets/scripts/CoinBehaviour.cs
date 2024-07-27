@@ -37,9 +37,12 @@ public class CoinBehaviour : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        _audioSource.Play();
-        _collider.enabled = false;
-        _renderer.enabled = false;
-        Destroy(gameObject,1f);
+        if(other.CompareTag("Player"))
+        {
+            _audioSource.Play();
+            _collider.enabled = false;
+            _renderer.enabled = false;
+            Destroy(gameObject, 1f);
+        }
     }
 }
