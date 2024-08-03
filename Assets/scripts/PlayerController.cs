@@ -17,9 +17,12 @@ public class PlayerController : MonoBehaviour
 
     float _throwCooldown = 0f;
 
+    Vector3 _startPosition = Vector3.zero;
+
     // Start is called before the first frame update
     void Start()
     {
+        _startPosition = transform.position;
         rb = GetComponent<Rigidbody>();
         _obstacleMask = LayerMask.GetMask("obstacle");
         _playerAnim = GetComponentInChildren<PlayerAnim>();
@@ -91,5 +94,10 @@ public class PlayerController : MonoBehaviour
                 yield break;
             }      
         }
+    }
+
+    public void Death()
+    {
+        transform.position = _startPosition;
     }
 }
