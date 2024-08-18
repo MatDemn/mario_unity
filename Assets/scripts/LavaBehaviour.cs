@@ -18,7 +18,16 @@ public class LavaBehaviour : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.TryGetComponent<PlayerController>(out var playerComponent)) {
+        if(other.TryGetComponent<PlayerController>(out var playerComponent)) 
+        {
+            playerComponent.Death();
+        }
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.TryGetComponent<PlayerController>(out var playerComponent))
+        {
             playerComponent.Death();
         }
     }

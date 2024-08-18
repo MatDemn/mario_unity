@@ -1,5 +1,37 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2858346351461008176
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7362462295822869453}
+  m_Layer: 3
+  m_Name: InvincibleScalePivot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7362462295822869453
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2858346351461008176}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.451, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2476034351201697686}
+  m_Father: {fileID: 7741139118520239812}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3561582805306420193
 GameObject:
   m_ObjectHideFlags: 0
@@ -23,6 +55,37 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3561582805306420193}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0.0272, y: -0.0096, z: -0.0051}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3063641419475891682}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!1 &4686678826446943557
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9168513587089289476}
+  m_Layer: 3
+  m_Name: FireballTransform
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9168513587089289476
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4686678826446943557}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0.0272, y: -0.0096, z: -0.0051}
@@ -155,7 +218,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2476034351201697686}
+  - {fileID: 7362462295822869453}
   - {fileID: 3545893047747132321}
   - {fileID: 2249126731475082314}
   m_Father: {fileID: 0}
@@ -174,6 +237,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _playerModel: {fileID: 2476034351201697686}
   _isGrounded: 1
+  _normalMaterial: {fileID: 2100000, guid: 593f790d06b1521478a02c5131ec6bf3, type: 2}
+  _invincibleMaterial: {fileID: 2100000, guid: e3704dc69fbccab4ba6f55d7b7c00089, type: 2}
+  _goldMaterial: {fileID: 2100000, guid: 963d67481287b60418b7909aa109272b, type: 2}
+  _skinnedMeshRenderer: {fileID: 7464771108341639377}
+  _invincibleScalePivot: {fileID: 7362462295822869453}
 --- !u!54 &6553463609860249682
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -248,13 +316,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7464901790993585609}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0.451, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4691911103872922168}
-  m_Father: {fileID: 7741139118520239812}
+  m_Father: {fileID: 7362462295822869453}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1001 &3944928482987072586
 PrefabInstance:
@@ -501,7 +569,7 @@ PrefabInstance:
     - target: {fileID: -6841094334369071870, guid: d52d7a4bd16e8764fa76a1e82e9baa01, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: -4728555750425982918, guid: 1ad9baed70976c949ad7c86cd5b5d536, type: 3}
+      objectReference: {fileID: 2100000, guid: 593f790d06b1521478a02c5131ec6bf3, type: 2}
     - target: {fileID: -5556852500511821674, guid: d52d7a4bd16e8764fa76a1e82e9baa01, type: 3}
       propertyPath: m_Layer
       value: 3
@@ -776,6 +844,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -1435662480209895375, guid: d52d7a4bd16e8764fa76a1e82e9baa01, type: 3}
       insertIndex: -1
       addedObject: {fileID: 281562628433115604}
+    - targetCorrespondingSourceObject: {fileID: -1435662480209895375, guid: d52d7a4bd16e8764fa76a1e82e9baa01, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9168513587089289476}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 7036213049465896255, guid: d52d7a4bd16e8764fa76a1e82e9baa01, type: 3}
       insertIndex: -1
@@ -838,7 +909,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _fireballPrefab: {fileID: 8344741895269664705, guid: cd275a6751afd3e4a9dd2a1293ecaffe, type: 3}
-  _fireballTransform: {fileID: 281562628433115604}
+  _fireballTransform: {fileID: 9168513587089289476}
 --- !u!4 &3063641419475891682 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -1435662480209895375, guid: d52d7a4bd16e8764fa76a1e82e9baa01, type: 3}
@@ -847,5 +918,10 @@ Transform:
 --- !u!4 &4691911103872922168 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: d52d7a4bd16e8764fa76a1e82e9baa01, type: 3}
+  m_PrefabInstance: {fileID: 5086742348976821715}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &7464771108341639377 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -6841094334369071870, guid: d52d7a4bd16e8764fa76a1e82e9baa01, type: 3}
   m_PrefabInstance: {fileID: 5086742348976821715}
   m_PrefabAsset: {fileID: 0}

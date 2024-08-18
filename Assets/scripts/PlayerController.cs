@@ -2,6 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum PlayerTransformState
+{
+    SMALL = 0,
+    NORMAL = 1,
+}
+
 public class PlayerController : MonoBehaviour
 {
     Rigidbody rb;
@@ -19,6 +25,26 @@ public class PlayerController : MonoBehaviour
 
     Vector3 _startPosition = Vector3.zero;
 
+    bool _isTransforming = false;
+
+    PlayerTransformState _transformState = PlayerTransformState.SMALL;
+
+    float _invincibleTime = 0f;
+
+    [SerializeField]
+    Material _normalMaterial;
+
+    [SerializeField]
+    Material _invincibleMaterial;
+
+    [SerializeField]
+    Material _goldMaterial;
+
+    [SerializeField]
+    SkinnedMeshRenderer _skinnedMeshRenderer;
+
+    [SerializeField]
+    Transform _invincibleScalePivot;
     // Start is called before the first frame update
     void Start()
     {
@@ -31,6 +57,8 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (_isTransforming) return;
+
         bool walking = false;
         if(Input.GetKey(KeyCode.W))
         {
@@ -98,6 +126,84 @@ public class PlayerController : MonoBehaviour
 
     public void Death()
     {
-        transform.position = _startPosition;
+        if (_invincibleTime > 0f) return;
+
+        if(_transformState == PlayerTransformState.SMALL)
+        {
+            transform.position = _startPosition;
+        }
+        else // _transformState == PlayerTransformState.NORMAL
+        {
+            TransformPlayer();
+        }
+    }
+
+    public void TransformPlayer()
+    {
+        if (_isTransforming) return;
+
+        _isTransforming = true;
+
+        PlayerTransformState newState = PlayerTransformState.NORMAL;
+        if(_transformState == PlayerTransformState.NORMAL)
+        {
+            newState = PlayerTransformState.SMALL;
+        }
+        StartCoroutine(TransformAnim(newState));
+    }
+
+    IEnumerator TransformAnim(PlayerTransformState newState)
+    {
+        if (newState == _transformState) yield break;
+
+        Vector3 newScale = Vector3.one + Vector3.up / 2;
+        Vector3 oldScale = Vector3.one;
+
+        if(newState == PlayerTransformState.SMALL)
+        {
+            Vector3 temp = newScale;
+            newScale = oldScale;
+            oldScale = temp;
+            StartCoroutine(SetInvincible(false));
+        }
+
+        for(int i = 0; i<3; i++)
+        {
+            yield return new WaitForSeconds(.1f);
+            _invincibleScalePivot.localScale = newScale;
+            yield return new WaitForSeconds(.1f);
+            _invincibleScalePivot.localScale = oldScale;
+        }
+        _invincibleScalePivot.localScale = newScale;
+        _transformState = newState;
+        _isTransforming = false;
+    }
+
+    public void InvincibleStart()
+    {
+        StartCoroutine(SetInvincible(true));
+    }
+
+    IEnumerator SetInvincible(bool isStarInvincible)
+    {
+        _invincibleTime = 3f;
+        List<Material> normalMaterials = new List<Material>() { _normalMaterial };
+        List<Material> invincibleMaterials = new List<Material>() { _invincibleMaterial };
+        List<Material> goldMaterials = new List<Material>() { _goldMaterial };
+        if(isStarInvincible)
+        {
+            _skinnedMeshRenderer.SetMaterials(goldMaterials);
+        }
+        else
+        {
+            _skinnedMeshRenderer.SetMaterials(invincibleMaterials);
+        }
+        while (_invincibleTime > 0f)
+        {
+            yield return null;
+            _invincibleTime -= Time.deltaTime;
+        }
+        _invincibleTime = 0f;
+        _skinnedMeshRenderer.SetMaterials(normalMaterials);
     }
 }
