@@ -27,6 +27,8 @@ public class PlayerController : MonoBehaviour
 
     bool _isTransforming = false;
 
+    bool _isCannonBalling = false;
+
     PlayerTransformState _transformState = PlayerTransformState.SMALL;
 
     float _invincibleTime = 0f;
@@ -57,7 +59,7 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (_isTransforming) return;
+        if (_isTransforming || _isCannonBalling) return;
 
         bool walking = false;
         if(Input.GetKey(KeyCode.W))
@@ -206,4 +208,19 @@ public class PlayerController : MonoBehaviour
         _invincibleTime = 0f;
         _skinnedMeshRenderer.SetMaterials(normalMaterials);
     }
+
+    public void CannonFire(Vector3 direction)
+    {
+        _isCannonBalling = true;
+        _playerModel.gameObject.SetActive(false);
+        StartCoroutine(CoroutineUtils.ExecuteAfter(1f, () =>
+        {
+            _isCannonBalling = false;
+            _playerModel.gameObject.SetActive(true);
+            rb.AddForce(direction);
+        }));
+        
+    }
+
+
 }
