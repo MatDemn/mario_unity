@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class StarBehaviour : MonoBehaviour
 {
+    [SerializeField]
+    float _invTime = 3f;
     // Start is called before the first frame update
     void Start()
     {
@@ -20,7 +22,7 @@ public class StarBehaviour : MonoBehaviour
     {
         if(other.gameObject.CompareTag("Player"))
         {
-            other.GetComponent<PlayerController>().InvincibleStart();
+            other.GetComponent<PlayerController>().InvincibleStart(_invTime);
             GetComponent<Collider>().enabled = false;
             Destroy(gameObject, .1f);
         }

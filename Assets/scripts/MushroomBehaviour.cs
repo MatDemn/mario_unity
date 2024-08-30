@@ -30,7 +30,11 @@ public class MushroomBehaviour : MonoBehaviour
         {
             if(_mushroomType == MushroomType.RED)
             {
-                other.GetComponent<PlayerController>().TransformPlayer();
+                if (!other.GetComponent<PlayerController>().TransformPlayer(PlayerTransformState.NORMAL, false)) return;
+            }
+            else if(_mushroomType == MushroomType.BLUE)
+            {
+                if (!other.GetComponent<PlayerController>().TransformPlayer(PlayerTransformState.SMALL, false)) return;
             }
             GetComponent<Collider>().enabled = false;
             Destroy(gameObject, .1f);

@@ -33,6 +33,8 @@ public class PlayerController : MonoBehaviour
 
     float _invincibleTime = 0f;
 
+    float _hurtInvincibleTime = 0f;
+
     [SerializeField]
     Material _normalMaterial;
 
@@ -47,6 +49,24 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField]
     Transform _invincibleScalePivot;
+
+    Coroutine _invincibleCoroutine;
+
+    float _currentWalkSpeed = 3f;
+
+    float _normalWalkSpeed = 3f;
+
+    float _speedWalk = 5f;
+
+
+    float _currentJumpHeight = 5f;
+
+    float _normalJumpHeight = 5f;
+
+    float _goldJumpHeight = 8f;
+
+    bool _isLadder = false;
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -62,25 +82,25 @@ public class PlayerController : MonoBehaviour
         if (_isTransforming || _isCannonBalling) return;
 
         bool walking = false;
-        if(Input.GetKey(KeyCode.W))
+        if (Input.GetKey(KeyCode.W) && !_isLadder)
         {
             _playerModel.rotation = Quaternion.Euler(0, 0, 0);
         }
-        if (Input.GetKey(KeyCode.S))
+        if (Input.GetKey(KeyCode.S) && !_isLadder)
         {
             _playerModel.rotation = Quaternion.Euler(0, 180, 0);
         }
         if (Input.GetKey(KeyCode.A))
         {
-            if(!Physics.Raycast(transform.position, -transform.right, .4f, _obstacleMask))
+            if (!Physics.Raycast(transform.position, -transform.right, .4f, _obstacleMask))
             {
                 walking = true;
                 // Ruch w lewo
-                transform.position += -Vector3.right * 3f * Time.deltaTime;
+                transform.position += -Vector3.right * _currentWalkSpeed * Time.deltaTime;
                 _playerModel.rotation = Quaternion.Euler(0, -90, 0);
             }
         }
-        if(Input.GetKey(KeyCode.D))
+        if (Input.GetKey(KeyCode.D))
         {
             if (!Physics.Raycast(transform.position, transform.right, .4f, _obstacleMask))
             {
@@ -89,14 +109,14 @@ public class PlayerController : MonoBehaviour
                 transform.position += Vector3.right * 3f * Time.deltaTime;
                 _playerModel.rotation = Quaternion.Euler(0, 90, 0);
             }
-                
+
         }
 
         _playerAnim.SetWalking(walking);
 
         if (_isGrounded && Input.GetKeyDown(KeyCode.Space))
         {
-            rb.AddForce(Vector3.up * 6f, ForceMode.Impulse);
+            rb.AddForce(Vector3.up * _currentJumpHeight, ForceMode.Impulse);
             _isGrounded = false;
             _playerAnim.SetJump(true);
             StartCoroutine(DisableAnimIfGrounded());
@@ -104,9 +124,9 @@ public class PlayerController : MonoBehaviour
 
         _isGrounded = Physics.Raycast(transform.position, -transform.up, 0.6f);
 
-        _throwCooldown -= _throwCooldown < 0 ? 0 : Time.deltaTime; 
+        _throwCooldown -= _throwCooldown < 0 ? 0 : Time.deltaTime;
 
-        if(_throwCooldown <= 0 && Input.GetKeyDown(KeyCode.LeftShift))
+        if (_throwCooldown <= 0 && Input.GetKeyDown(KeyCode.LeftShift))
         {
             _throwCooldown = 3f;
             _playerAnim.TriggerThrow();
@@ -122,39 +142,35 @@ public class PlayerController : MonoBehaviour
             {
                 _playerAnim.SetJump(false);
                 yield break;
-            }      
+            }
         }
     }
 
     public void Death()
     {
-        if (_invincibleTime > 0f) return;
+        if (_invincibleTime > 0f || _hurtInvincibleTime > 0f) return;
 
-        if(_transformState == PlayerTransformState.SMALL)
+        if (_transformState == PlayerTransformState.SMALL)
         {
             transform.position = _startPosition;
         }
         else // _transformState == PlayerTransformState.NORMAL
         {
-            TransformPlayer();
+            TransformPlayer(PlayerTransformState.SMALL, true);
         }
     }
 
-    public void TransformPlayer()
+    public bool TransformPlayer(PlayerTransformState newState, bool hurtInvincibleEffect)
     {
-        if (_isTransforming) return;
+        if (_isTransforming || newState == _transformState) return false;
 
         _isTransforming = true;
 
-        PlayerTransformState newState = PlayerTransformState.NORMAL;
-        if(_transformState == PlayerTransformState.NORMAL)
-        {
-            newState = PlayerTransformState.SMALL;
-        }
-        StartCoroutine(TransformAnim(newState));
+        StartCoroutine(TransformAnim(newState, hurtInvincibleEffect));
+        return true;
     }
 
-    IEnumerator TransformAnim(PlayerTransformState newState)
+    IEnumerator TransformAnim(PlayerTransformState newState, bool hurtInvincibleEffect)
     {
         if (newState == _transformState) yield break;
 
@@ -166,7 +182,10 @@ public class PlayerController : MonoBehaviour
             Vector3 temp = newScale;
             newScale = oldScale;
             oldScale = temp;
-            StartCoroutine(SetInvincible(false));
+            if (hurtInvincibleEffect)
+            {
+                StartCoroutine(SetInvincible(false, 3f));
+            }
         }
 
         for(int i = 0; i<3; i++)
@@ -181,20 +200,32 @@ public class PlayerController : MonoBehaviour
         _isTransforming = false;
     }
 
-    public void InvincibleStart()
+    public void InvincibleStart(float invTime)
     {
-        StartCoroutine(SetInvincible(true));
+        _currentWalkSpeed = _normalWalkSpeed;
+        _currentJumpHeight = _normalJumpHeight;
+        if(_invincibleCoroutine != null)
+        {
+            StopCoroutine(_invincibleCoroutine);
+            _invincibleCoroutine = null;
+            List<Material> normalMaterials = new List<Material>() { _normalMaterial };
+            _invincibleTime = 0f;
+            _skinnedMeshRenderer.SetMaterials(normalMaterials);
+        }
+        _invincibleCoroutine = StartCoroutine(SetInvincible(true, invTime));
     }
 
-    IEnumerator SetInvincible(bool isStarInvincible)
+    IEnumerator SetInvincible(bool isStarInvincible, float invTime)
     {
-        _invincibleTime = 3f;
+        _invincibleTime = invTime;
         List<Material> normalMaterials = new List<Material>() { _normalMaterial };
         List<Material> invincibleMaterials = new List<Material>() { _invincibleMaterial };
         List<Material> goldMaterials = new List<Material>() { _goldMaterial };
         if(isStarInvincible)
         {
             _skinnedMeshRenderer.SetMaterials(goldMaterials);
+            _currentWalkSpeed = _speedWalk;
+            _currentJumpHeight = _goldJumpHeight;
         }
         else
         {
@@ -207,6 +238,8 @@ public class PlayerController : MonoBehaviour
         }
         _invincibleTime = 0f;
         _skinnedMeshRenderer.SetMaterials(normalMaterials);
+        _currentWalkSpeed = _normalWalkSpeed;
+        _currentJumpHeight = _normalJumpHeight;
     }
 
     public void CannonFire(Vector3 direction)
@@ -222,5 +255,24 @@ public class PlayerController : MonoBehaviour
         
     }
 
+    public void StartLadder()
+    {
+        rb.useGravity = false;
+        _isLadder = true;
+        _isGrounded = true;
+        _playerModel.rotation = Quaternion.Euler(0, 0, 0);
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+    }
 
+    public void MoveLadder(Vector3 direction)
+    {
+        transform.position += direction * _currentWalkSpeed * Time.deltaTime;
+    }
+
+    public void StopLadder()
+    {
+        rb.useGravity = true;
+        _isLadder = false;
+    }
 }
